@@ -52,4 +52,15 @@ export const fetchUpcomingReminders = async () => {
         throw new Error('Failed to fetch upcoming reminders');
     }
     return response.json();
+};
+
+export const fetchProductByBarcode = async (barcode) => {
+    const response = await fetch(`${API_BASE_URL}/reminders/barcode/${barcode}`);
+    if (response.status === 404) {
+        return { exists: false, product: null };
+    }
+    if (!response.ok) {
+        throw new Error('Failed to fetch product details');
+    }
+    return response.json();
 }; 

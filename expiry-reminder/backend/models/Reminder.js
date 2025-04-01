@@ -10,6 +10,11 @@ const reminderSchema = new mongoose.Schema({
         type: String,
         trim: true
     },
+    barcode: {
+        type: String,
+        trim: true,
+        index: true
+    },
     expiryDate: {
         type: Date,
         required: [true, 'Expiry date is required']

@@ -42,6 +42,75 @@ router.get('/upcoming', async (req, res) => {
     }
 });
 
+// Get product details by barcode
+router.get('/barcode/:code', async (req, res) => {
+    try {
+        const { code } = req.params;
+        
+        // First check if we already have a reminder with this barcode
+        const existingReminder = await Reminder.findOne({ barcode: code });
+        if (existingReminder) {
+            return res.json({
+                exists: true,
+                reminder: existingReminder
+            });
+        }
+        
+        // In a real app, you would call an external API here to get product details
+        // For demonstration, we'll return mock data based on the barcode
+        // Replace this with actual API calls in production
+        
+        // Mock product data - simulate fetching from an external API
+        const mockProducts = {
+            '5901234123457': {
+                title: 'Milk (1L)',
+                description: 'Fresh milk, 3.2% fat',
+                category: 'Food',
+                defaultExpiryDays: 7
+            },
+            '4011200296908': {
+                title: 'Banana Bundle',
+                description: 'Organic bananas',
+                category: 'Food',
+                defaultExpiryDays: 5
+            },
+            '3045320094084': {
+                title: 'Paracetamol',
+                description: 'Pain reliever, 500mg tablets',
+                category: 'Medicine',
+                defaultExpiryDays: 365
+            },
+            // Add more mock products as needed
+        };
+        
+        if (mockProducts[code]) {
+            const product = mockProducts[code];
+            
+            // Calculate default expiry date
+            const expiryDate = new Date();
+            expiryDate.setDate(expiryDate.getDate() + product.defaultExpiryDays);
+            
+            return res.json({
+                exists: false,
+                product: {
+                    ...product,
+                    barcode: code,
+                    suggestedExpiryDate: expiryDate.toISOString().split('T')[0]
+                }
+            });
+        }
+        
+        // If not found in mock data, return not found
+        return res.status(404).json({ 
+            message: 'Product not found for the given barcode',
+            barcode: code
+        });
+        
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+});
+
 // Create a new reminder
 router.post('/', async (req, res) => {
     try {

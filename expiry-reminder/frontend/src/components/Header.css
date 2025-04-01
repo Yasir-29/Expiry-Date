@@ -1,57 +1,69 @@
 .app-header {
-  background-color: #4a90e2;
-  padding: 1.5rem;
-  color: white;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   display: flex;
   justify-content: space-between;
   align-items: center;
+  padding: 15px 20px;
+  background-color: #3f51b5;
+  color: white;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .app-header h1 {
   margin: 0;
-  font-size: 1.75rem;
-  font-weight: 600;
+  font-size: 24px;
+  font-weight: 500;
+}
+
+.header-actions {
+  display: flex;
+  gap: 10px;
 }
 
 .add-button {
-  background-color: white;
-  color: #4a90e2;
+  padding: 8px 16px;
+  background-color: #4caf50;
+  color: white;
   border: none;
-  padding: 0.75rem 1.5rem;
   border-radius: 4px;
-  font-size: 1rem;
   font-weight: 500;
   cursor: pointer;
-  transition: all 0.3s ease;
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
+  transition: background-color 0.2s;
 }
 
 .add-button:hover {
-  background-color: #f8f9fa;
-  transform: translateY(-1px);
+  background-color: #388e3c;
 }
 
-.add-button:active {
-  transform: translateY(0);
+.scan-qr-button {
+  padding: 8px 16px;
+  background-color: #ff9800;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.scan-qr-button:hover {
+  background-color: #f57c00;
 }
 
 @media (max-width: 600px) {
   .app-header {
-    padding: 1rem;
     flex-direction: column;
-    gap: 1rem;
-    text-align: center;
+    padding: 15px;
   }
-
+  
   .app-header h1 {
-    font-size: 1.5rem;
+    margin-bottom: 10px;
   }
-
-  .add-button {
+  
+  .header-actions {
     width: 100%;
-    justify-content: center;
+  }
+  
+  .add-button, .scan-qr-button {
+    flex: 1;
   }
 } 

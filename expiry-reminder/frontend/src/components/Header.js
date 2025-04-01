@@ -1,13 +1,16 @@
 import React from 'react';
 import './Header.css';
 
-function Header({ onAddClick }) {
+function Header({ onAddClick, onScanQRClick }) {
   return (
-    <header className="header">
-      <div className="header-content">
-        <h1>Expiry Date Reminder</h1>
+    <header className="app-header">
+      <h1>Expiry Reminder</h1>
+      <div className="header-actions">
+        <button className="scan-qr-button" onClick={onScanQRClick}>
+          Scan QR
+        </button>
         <button className="add-button" onClick={onAddClick}>
-          Add New Reminder
+          Add Reminder
         </button>
       </div>
     </header>
