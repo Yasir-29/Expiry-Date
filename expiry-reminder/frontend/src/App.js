@@ -6,6 +6,8 @@ import QRCodeScanner from './components/QRCodeScanner';
 import Header from './components/Header';
 import { fetchReminders, createReminder, updateReminder, deleteReminder } from './services/api';
 
+const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000';
+
 function App() {
   const [reminders, setReminders] = useState([]);
   const [showAddForm, setShowAddForm] = useState(false);

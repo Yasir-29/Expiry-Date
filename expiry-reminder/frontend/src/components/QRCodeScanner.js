@@ -1,82 +1,107 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useZxing } from 'react-zxing';
 import './QRCodeScanner.css';
 
-function QRCodeScanner({ onQRCodeDetected, onClose }) {
+const QRCodeScanner = ({ onDetected }) => {
+  const [isScanning, setIsScanning] = useState(false);
   const [error, setError] = useState('');
-  const [success, setSuccess] = useState(false);
-  const [scanData, setScanData] = useState(null);
-  
-  const { ref } = useZxing({
+  const [showSuccess, setShowSuccess] = useState(false);
+  const [isSafari, setIsSafari] = useState(false);
+
+  useEffect(() => {
+    // Check if the browser is Safari on iOS
+    const isSafariBrowser = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
+    const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+    setIsSafari(isSafariBrowser && isIOS);
+  }, []);
+
+  const {
+    ref,
+    torch,
+    start,
+    stop,
+    isStarted,
+  } = useZxing({
     onDecodeResult(result) {
-      try {
-        // Try to parse the QR code content as JSON
-        const reminderData = JSON.parse(result.getText());
-        setScanData(reminderData);
-        setSuccess(true);
-        
-        // Briefly show the success message before adding to list
-        setTimeout(() => {
-          onQRCodeDetected(reminderData);
-        }, 800);
-      } catch (err) {
-        setError('Invalid QR code format. The QR code does not contain valid reminder data.');
-      }
+      setShowSuccess(true);
+      onDetected(result.getText());
+      setTimeout(() => {
+        setShowSuccess(false);
+      }, 2000);
     },
     onError(error) {
-      setError(`Error scanning: ${error.message}`);
-    },
-    constraints: {
-      video: {
-        facingMode: 'environment', // Use the back camera if available
-        width: { ideal: 1280 },
-        height: { ideal: 720 }
+      if (error.name === 'NotAllowedError') {
+        setError('Camera permission denied. Please enable camera access.');
+      } else if (error.name === 'NotFoundError') {
+        setError('No camera found on your device.');
+      } else {
+        setError('Error accessing camera: ' + error.message);
       }
     },
-    timeBetweenDecodingAttempts: 300,
-    formats: ['qrcode'], // Focus only on QR codes for better performance
   });
+
+  const handleStartScan = async () => {
+    setError('');
+    try {
+      if (isSafari) {
+        // For Safari on iOS, we need to request permission explicitly
+        const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } });
+        stream.getTracks().forEach(track => track.stop()); // Stop the stream immediately
+      }
+      setIsScanning(true);
+      start();
+    } catch (err) {
+      if (err.name === 'NotAllowedError') {
+        setError('Please enable camera access in your browser settings.');
+      } else {
+        setError('Error starting camera: ' + err.message);
+      }
+    }
+  };
+
+  const handleStopScan = () => {
+    setIsScanning(false);
+    stop();
+  };
 
   return (
     <div className="qr-scanner-container">
-      <div className="qr-scanner-header">
-        <h3>Scan Reminder QR Code</h3>
-        <button className="close-button" onClick={onClose}>×</button>
-      </div>
+      <h2>Scan QR Code</h2>
+      {error && <div className="error-message">{error}</div>}
       
-      {error && (
-        <div className="error-message">
-          {error}
-          <button onClick={() => setError('')}>×</button>
+      {!isScanning ? (
+        <button className="scan-button" onClick={handleStartScan}>
+          Start Scanning
+        </button>
+      ) : (
+        <div className="scanner-view">
+          {isSafari && (
+            <div className="safari-notice">
+              For iOS Safari: Please allow camera access when prompted
+            </div>
+          )}
+          <video
+            ref={ref}
+            className="scanner-video"
+            style={{ display: isScanning ? 'block' : 'none' }}
+          />
+          <div className="scanner-overlay">
+            <div className="scanner-target"></div>
+          </div>
+          <button className="stop-button" onClick={handleStopScan}>
+            Stop Scanning
+          </button>
         </div>
       )}
       
-      {success ? (
+      {showSuccess && (
         <div className="success-message">
-          <div className="success-icon">✓</div>
-          <div className="success-text">
-            <p>QR Code Successfully Scanned!</p>
-            <p className="success-details">Adding "{scanData?.title}" to your reminders...</p>
-          </div>
+          <span className="success-icon">✓</span>
+          <span className="success-text">QR Code scanned successfully!</span>
         </div>
-      ) : (
-        <>
-          <div className="video-container">
-            <video ref={ref} className="scanner-video" />
-            <div className="scanner-overlay">
-              <div className="scanner-target"></div>
-            </div>
-          </div>
-          
-          <div className="scanner-instructions">
-            <p>Position the QR code inside the frame to scan</p>
-            <p className="scanner-note">The QR code should contain reminder data generated by this app</p>
-            <p className="scanner-tip">Make sure you have good lighting and hold the camera steady</p>
-          </div>
-        </>
       )}
     </div>
   );
-}
+};
 
 export default QRCodeScanner; 
