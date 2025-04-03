@@ -1,0 +1,15 @@
+{
+  "files": {
+    "main.css": "/Expiry-Date/static/css/main.4882a05a.css",
+    "main.js": "/Expiry-Date/static/js/main.841225b3.js",
+    "static/js/453.8ab44547.chunk.js": "/Expiry-Date/static/js/453.8ab44547.chunk.js",
+    "index.html": "/Expiry-Date/index.html",
+    "main.4882a05a.css.map": "/Expiry-Date/static/css/main.4882a05a.css.map",
+    "main.841225b3.js.map": "/Expiry-Date/static/js/main.841225b3.js.map",
+    "453.8ab44547.chunk.js.map": "/Expiry-Date/static/js/453.8ab44547.chunk.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.4882a05a.css",
+    "static/js/main.841225b3.js"
+  ]
+}
